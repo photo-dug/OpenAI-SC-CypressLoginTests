@@ -93,6 +93,9 @@ CYPRESS_validEmail='your-user@example.com' \
 CYPRESS_validPassword='your-strong-password' \
 CYPRESS_verificationCode='123456' \
 npm run cy:run:login
+
+or 
+npx cypress open --e2e --config-file cypress.config.cjs
 ```
 
 > For real email verification flows, connect your inbox/mail API and pass the received OTP via `CYPRESS_verificationCode`.
@@ -156,7 +159,7 @@ npm run cy:open
 
 ---
 
-## 7) Troubleshooting: `fatal: not a git repository` / `--3way outside a repository`
+## 7) Troubleshooting:
 
 If you see:
 
