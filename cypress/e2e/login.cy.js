@@ -7,7 +7,7 @@ const validUser = {
   verificationCode: Cypress.env('verificationCode') || ''
 };
 
-const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@mac.com`);
+const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@me.com`);
 
 describe('Login page security and robustness suite', () => {
   beforeEach(() => {
