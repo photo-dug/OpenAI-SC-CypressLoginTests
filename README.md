@@ -6,7 +6,7 @@ This repository contains a reusable Cypress suite for login testing, including:
 - payload safety testing (XSS and SQL injection-style payloads)
 - large password handling checks
 - valid credential login flow with optional email verification code entry
-- account alias coverage for `dougrosss+sc16@mac.com` through `dougrosss+sc20@mac.com`
+- account alias coverage for `dougrosss+sc16@me.com` through `dougrosss+sc20@me.com`
 
 ---
 
