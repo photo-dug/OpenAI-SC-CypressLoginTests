@@ -7,7 +7,7 @@ const validUser = {
   verificationCode: Cypress.env('verificationCode') || ''
 };
 
-const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@me.com`);
+const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@mac.com`);
 
 describe('Login page security and robustness suite', () => {
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('Login page security and robustness suite', () => {
     const hugePassword = `Aa1!${'X'.repeat(2000)}`;
     cy.submitLogin('load-test@example.com', hugePassword);
     cy.assertLoginError();
-    cy.get(cy.getSelector('submit')).should('be.visible').and('not.be.disabled');
+    cy.getBySelectorName('submit').should('be.visible').and('not.be.disabled');
   });
 
   it('logs in with valid credentials and completes optional email verification', () => {
