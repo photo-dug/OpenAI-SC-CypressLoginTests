@@ -15,7 +15,7 @@ describe('Login page security and robustness suite', () => {
   });
 
   it('rejects empty email and empty password', () => {
-    cy.get(cy.getSelector('submit')).click();
+    cy.getBySelectorName('submit').click();
     cy.assertLoginError();
   });
 

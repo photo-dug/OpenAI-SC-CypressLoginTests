@@ -1,24 +1,36 @@
+const resolveSelector = (name) => {
+  const selectors = Cypress.env('selectors') || {};
+  const selector = selectors[name];
+
+  if (!selector || typeof selector !== 'string') {
+    throw new Error(
+      `Missing selector mapping for "${name}". Update cypress.config.js -> env.selectors.${name}`
+    );
+  }
+
+  return selector;
+};
+
 Cypress.Commands.add('openLoginPage', () => {
   cy.visit(Cypress.env('loginPath'));
 });
 
-Cypress.Commands.add('getSelector', (name) => {
-  const selectors = Cypress.env('selectors') || {};
-  return selectors[name];
+Cypress.Commands.add('getBySelectorName', (name) => {
+  return cy.get(resolveSelector(name));
 });
 
 Cypress.Commands.add('submitLogin', (email, password) => {
-  cy.get(cy.getSelector('email')).clear().type(email, { log: false });
-  cy.get(cy.getSelector('password')).clear().type(password, { log: false });
-  cy.get(cy.getSelector('submit')).click();
+  cy.getBySelectorName('email').clear().type(email, { log: false });
+  cy.getBySelectorName('password').clear().type(password, { log: false });
+  cy.getBySelectorName('submit').click();
 });
 
 Cypress.Commands.add('assertLoginError', () => {
-  cy.get(cy.getSelector('errorMessage')).should('be.visible');
+  cy.getBySelectorName('errorMessage').should('be.visible');
 });
 
 Cypress.Commands.add('assertLoginSuccess', () => {
-  cy.get(cy.getSelector('successIndicator')).should('be.visible');
+  cy.getBySelectorName('successIndicator').should('be.visible');
 });
 
 Cypress.Commands.add('performEmailVerification', (verificationCode) => {
@@ -27,11 +39,12 @@ Cypress.Commands.add('performEmailVerification', (verificationCode) => {
     return;
   }
 
+  const verificationInput = resolveSelector('verificationCodeInput');
+
   cy.get('body').then(($body) => {
-    const codeSelector = cy.getSelector('verificationCodeInput');
-    if ($body.find(codeSelector).length) {
-      cy.get(codeSelector).clear().type(verificationCode, { log: false });
-      cy.get(cy.getSelector('verificationSubmit')).click();
+    if ($body.find(verificationInput).length) {
+      cy.get(verificationInput).clear().type(verificationCode, { log: false });
+      cy.getBySelectorName('verificationSubmit').click();
     }
   });
 });
