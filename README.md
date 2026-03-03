@@ -6,7 +6,7 @@ This repository contains a reusable Cypress suite for login testing, including:
 - payload safety testing (XSS and SQL injection-style payloads)
 - large password handling checks
 - valid credential login flow with optional email verification code entry
-- account alias coverage for `dougrosss+sc16@me.com` through `dougrosss+sc20@me.com`
+- account alias coverage for `dougrosss+sc16@mac.com` through `dougrosss+sc20@mac.com`
 
 ---
 
@@ -93,9 +93,6 @@ CYPRESS_validEmail='your-user@example.com' \
 CYPRESS_validPassword='your-strong-password' \
 CYPRESS_verificationCode='123456' \
 npm run cy:run:login
-
-or 
-npx cypress open --e2e --config-file cypress.config.cjs
 ```
 
 > For real email verification flows, connect your inbox/mail API and pass the received OTP via `CYPRESS_verificationCode`.
@@ -159,7 +156,7 @@ npm run cy:open
 
 ---
 
-## 7) Troubleshooting:
+## 7) Troubleshooting: `fatal: not a git repository` / `--3way outside a repository`
 
 If you see:
 
@@ -251,4 +248,28 @@ Then verify:
 ```bash
 git status
 ```
+
+---
+
+
+## 8) Troubleshooting: `cy.click() failed because it requires a DOM element`
+
+If Cypress points to code like:
+
+```js
+cy.get(cy.getSelector('submit')).click()
+```
+
+you are likely running an older version of this suite. The current suite uses:
+
+```js
+cy.getBySelectorName('submit').click()
+```
+
+### Fix
+
+1. Pull latest changes from GitHub.
+2. Ensure `cypress/support/commands.js` contains `Cypress.Commands.add('getBySelectorName', ...)`.
+3. Ensure `cypress/e2e/login.cy.js` uses `cy.getBySelectorName(...)` (not `cy.get(cy.getSelector(...))`).
+4. Restart the Cypress app after pulling changes.
 

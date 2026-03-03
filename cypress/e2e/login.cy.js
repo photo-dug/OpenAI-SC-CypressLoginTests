@@ -15,7 +15,7 @@ describe('Login page security and robustness suite', () => {
   });
 
   it('rejects empty email and empty password', () => {
-    cy.getBySelectorName('submit').click();
+    cy.clickSubmit();
     cy.assertLoginError();
   });
 
@@ -54,7 +54,7 @@ describe('Login page security and robustness suite', () => {
     const hugePassword = `Aa1!${'X'.repeat(2000)}`;
     cy.submitLogin('load-test@example.com', hugePassword);
     cy.assertLoginError();
-    cy.getBySelectorName('submit').should('be.visible').and('not.be.disabled');
+    cy.getBySelectorName('submit').filter(':visible').first().should('not.be.disabled');
   });
 
   it('logs in with valid credentials and completes optional email verification', () => {

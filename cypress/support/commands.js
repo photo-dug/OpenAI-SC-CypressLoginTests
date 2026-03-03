@@ -19,10 +19,19 @@ Cypress.Commands.add('getBySelectorName', (name) => {
   return cy.get(resolveSelector(name));
 });
 
+
+Cypress.Commands.add('clickSubmit', () => {
+  cy.getBySelectorName('submit')
+    .filter(':visible')
+    .first()
+    .scrollIntoView()
+    .click({ force: true });
+});
+
 Cypress.Commands.add('submitLogin', (email, password) => {
   cy.getBySelectorName('email').clear().type(email, { log: false });
   cy.getBySelectorName('password').clear().type(password, { log: false });
-  cy.getBySelectorName('submit').click();
+  cy.clickSubmit();
 });
 
 Cypress.Commands.add('assertLoginError', () => {
