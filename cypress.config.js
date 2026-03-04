@@ -11,10 +11,15 @@ module.exports = defineConfig({
     requestTimeout: 15000,
     env: {
       loginPath: '/login',
+      loginUrl: 'https://portal.soundcredit.com/login',
+      useUiLoginNav: false,
+      homePath: '/',
+      loginEntrySelector: '',
+      loginEntryText: 'Sign In',
       selectors: {
-        email: 'input[type="email"]',
-        password: 'input[type="password"]',
-        submit: 'button[type="submit"], .login-btn-container button[type="button"], .login-btn-container button',
+        email: 'input[type="email"], input[name="email"], input[placeholder*="mail"], input[id*="email"], .username-container input',
+        password: 'input[type="password"], input[name="password"], input[placeholder*="password"], input[id*="password"]',
+        submit: 'button[type="submit"], .login-btn-container button[type="button"], .login-btn-container button, [role="button"], input[type="submit"]',
         errorMessage: '[data-testid="login-error"], .error, .alert-danger',
         successIndicator: '[data-testid="dashboard"], [data-testid="account-home"]',
         verificationCodeInput: 'input[name="verificationCode"], input[autocomplete="one-time-code"]',
