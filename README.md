@@ -69,6 +69,7 @@ Edit `cypress.config.js` and set:
 - `baseUrl` to your real website
 - `env.loginPath` to your login route (for example `/login`)
 - `env.loginUrl` for direct login page navigation (recommended for Sound Credit: `https://portal.soundcredit.com/login`)
+- `env.signupUrl` for direct signup navigation (`https://portal.soundcredit.com/signup`)
 - optional UI-navigation mode (`env.useUiLoginNav`) if you need to click a home-page Sign In button first
 - `env.selectors` to match your actual DOM selectors
 
@@ -133,6 +134,12 @@ npm run cy:run
 
 ```bash
 npm run cy:run:login
+```
+
+### Run only the signup + onboarding suite
+
+```bash
+npm run cy:run:signup
 ```
 
 ### Run with browser selection
