@@ -281,7 +281,9 @@ git status
 ---
 
 
-## 8) Troubleshooting: `cy.click() failed because it requires a DOM element`
+## 8) Troubleshooting:
+
+cy.click() failed because it requires a DOM element`
 
 If Cypress points to code like:
 
