@@ -47,6 +47,12 @@ Cypress.Commands.add('openLoginPage', () => {
   });
 });
 
+Cypress.Commands.add('openSignupPage', () => {
+  const signupUrl = Cypress.env('signupUrl');
+  const signupPath = Cypress.env('signupPath') || '/signup';
+  cy.visit(signupUrl || signupPath, { failOnStatusCode: false });
+});
+
 Cypress.Commands.add('getBySelectorName', (name) => {
   const fallbackMap = {
     email: DEFAULT_EMAIL_INPUTS,
@@ -77,6 +83,13 @@ Cypress.Commands.add('clickSubmit', () => {
       .scrollIntoView()
       .click({ force: true });
   });
+});
+
+Cypress.Commands.add('clickNext', () => {
+  cy.contains('button, [role="button"]', /^\s*next\s*$/i, { timeout: 20000 })
+    .filter(':visible')
+    .first()
+    .click({ force: true });
 });
 
 Cypress.Commands.add('setupAuthFailureIntercept', () => {
@@ -147,8 +160,19 @@ Cypress.Commands.add('assertLoginSuccess', () => {
 });
 
 Cypress.Commands.add('performEmailVerification', (verificationCode) => {
+  const autofillLabel = Cypress.env('mailCodeAutofillLabel') || 'Fill code';
+
+  cy.get('body', { timeout: 90000 }).then(($body) => {
+    const autofillCandidates = $body
+      .find('button, [role="button"]')
+      .filter((_, el) => new RegExp(autofillLabel, 'i').test(el.innerText || ''));
+
+    if (autofillCandidates.length) {
+      cy.wrap(autofillCandidates[0]).click({ force: true });
+    }
+  });
+
   if (!verificationCode) {
-    cy.log('No verification code supplied; skipping code entry.');
     return;
   }
 
@@ -161,6 +185,19 @@ Cypress.Commands.add('performEmailVerification', (verificationCode) => {
     if ($body.find(verificationInput).length) {
       cy.get(verificationInput).filter(':visible').first().clear().type(verificationCode, { log: false });
       cy.getBySelectorName('verificationSubmit').filter(':visible').first().click({ force: true });
+    }
+  });
+});
+
+Cypress.Commands.add('logoutIfPossible', () => {
+  cy.get('body').then(($body) => {
+    const logoutLink = $body.find('a[href="/login"], .logout-nav a[href="/login"]:visible').first();
+
+    if (logoutLink.length) {
+      cy.wrap(logoutLink).click({ force: true });
+    } else {
+      cy.clearCookies();
+      cy.visit('/login', { failOnStatusCode: false });
     }
   });
 });
