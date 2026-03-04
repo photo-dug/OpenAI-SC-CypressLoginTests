@@ -1,4 +1,4 @@
-escribe('Login page security and robustness suite', () => {
+describe('Login page security and robustness suite', () => {
   beforeEach(() => {
     cy.openLoginPage();
   });
