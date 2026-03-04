@@ -1,15 +1,4 @@
-const xssPayload = '<script>alert("xss")</script>';
-const sqlInjectionPayload = "' OR '1'='1";
-
-const validUser = {
-  email: Cypress.env('validEmail') || 'replace-me@example.com',
-  password: Cypress.env('validPassword') || 'replace-me-password',
-  verificationCode: Cypress.env('verificationCode') || ''
-};
-
-const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@mac.com`);
-
-describe('Login page security and robustness suite', () => {
+escribe('Login page security and robustness suite', () => {
   beforeEach(() => {
     cy.openLoginPage();
   });
