@@ -33,12 +33,23 @@ const selectorFromConfig = (name, fallbackSelector) => {
   return typeof selector === 'string' && selector.trim() ? selector : fallbackSelector;
 };
 
+const visitOptionsWithAuth = () => {
+  const user = Cypress.env('basicAuthUser');
+  const pass = Cypress.env('basicAuthPass');
+
+  if (user && pass) {
+    return { failOnStatusCode: false, auth: { username: user, password: pass } };
+  }
+
+  return { failOnStatusCode: false };
+};
+
 Cypress.Commands.add('openLoginPage', () => {
   const loginUrl = Cypress.env('loginUrl');
   const loginPath = Cypress.env('loginPath') || '/login';
   const emailSelector = selectorFromConfig('email', DEFAULT_EMAIL_INPUTS);
 
-  cy.visit(loginUrl || loginPath, { failOnStatusCode: false });
+  cy.visit(loginUrl || loginPath, visitOptionsWithAuth());
 
   cy.get('body', { timeout: 30000 }).then(($body) => {
     if (!$body.find(emailSelector).length) {
@@ -50,7 +61,7 @@ Cypress.Commands.add('openLoginPage', () => {
 Cypress.Commands.add('openSignupPage', () => {
   const signupUrl = Cypress.env('signupUrl');
   const signupPath = Cypress.env('signupPath') || '/signup';
-  cy.visit(signupUrl || signupPath, { failOnStatusCode: false });
+  cy.visit(signupUrl || signupPath, visitOptionsWithAuth());
 });
 
 Cypress.Commands.add('getBySelectorName', (name) => {
@@ -197,7 +208,7 @@ Cypress.Commands.add('logoutIfPossible', () => {
       cy.wrap(logoutLink).click({ force: true });
     } else {
       cy.clearCookies();
-      cy.visit('/login', { failOnStatusCode: false });
+      cy.visit('/login', visitOptionsWithAuth());
     }
   });
 });

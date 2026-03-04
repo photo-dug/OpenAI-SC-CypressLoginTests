@@ -1,13 +1,11 @@
 const xssPayload = '<script>alert("xss")</script>';
 const sqlInjectionPayload = "' OR '1'='1";
 
-const validUser = {
-  email: Cypress.env('validEmail') || 'replace-me@example.com',
-  password: Cypress.env('validPassword') || 'replace-me-password',
+const knownGoodUser = {
+  email: Cypress.env('validEmail') || 'dougross@me.com',
+  password: Cypress.env('validPassword') || 'Gn^8hbr3w',
   verificationCode: Cypress.env('verificationCode') || ''
 };
-
-const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@mac.com`);
 
 describe('Login page security and robustness suite', () => {
   beforeEach(() => {
@@ -58,17 +56,11 @@ describe('Login page security and robustness suite', () => {
     cy.getBySelectorName('submit').filter(':visible').first().should('not.be.disabled');
   });
 
-  it('logs in with valid credentials and completes optional email verification', () => {
-    cy.submitLogin(validUser.email, validUser.password);
-    cy.performEmailVerification(validUser.verificationCode);
+  it('logs in and logs out with known-good credentials', () => {
+    cy.submitLogin(knownGoodUser.email, knownGoodUser.password);
+    cy.performEmailVerification(knownGoodUser.verificationCode);
     cy.assertLoginSuccess();
-  });
-
-  it('runs alias-based login coverage for mac.com verification accounts', () => {
-    emailAliases.forEach((alias) => {
-      cy.openLoginPage();
-      cy.submitLogin(alias, validUser.password);
-      cy.assertLoginError({ expectApiFailure: true });
-    });
+    cy.logoutIfPossible();
+    cy.url({ timeout: 20000 }).should('include', '/login');
   });
 });

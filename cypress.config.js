@@ -2,7 +2,7 @@ const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: 'https://portal.soundcredit.com',
+    baseUrl: 'https://devportal.soundcredit.com',
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/e2e.js',
     video: true,
@@ -11,13 +11,15 @@ module.exports = defineConfig({
     requestTimeout: 15000,
     env: {
       loginPath: '/login',
-      loginUrl: 'https://portal.soundcredit.com/login',
+      loginUrl: 'https://devportal.soundcredit.com/login',
       signupPath: '/signup',
-      signupUrl: 'https://portal.soundcredit.com/signup',
+      signupUrl: 'https://devportal.soundcredit.com/sign-up',
       useUiLoginNav: false,
       homePath: '/',
       loginEntrySelector: '',
       loginEntryText: 'Sign In',
+      basicAuthUser: 'soundways',
+      basicAuthPass: 'soundcredit-test',
       loginErrorText: 'Invalid email address and/or password|Authentication failed|Email or password incorrect',
       authFailureRoute: '**/auth/**',
       assertAuthFailureApi: false,

@@ -1,6 +1,6 @@
 # Cypress Login Robustness Suite
 
-This repository contains a reusable Cypress suite for login + Account creation testing, including:
+This repository contains a reusable Cypress suite for login testing, including:
 
 - input boundary testing (empty, malformed, short, long)
 - payload safety testing (XSS and SQL injection-style payloads)
@@ -68,9 +68,10 @@ Edit `cypress.config.js` and set:
 
 - `baseUrl` to your real website
 - `env.loginPath` to your login route (for example `/login`)
-- `env.loginUrl` for direct login page navigation (recommended for Sound Credit: `https://portal.soundcredit.com/login`)
-- `env.signupUrl` for direct signup navigation (`https://portal.soundcredit.com/signup`)
+- `env.loginUrl` for direct login page navigation (recommended for Sound Credit: `https://devportal.soundcredit.com/login`)
+- `env.signupUrl` for direct signup navigation (`https://devportal.soundcredit.com/signup`)
 - optional UI-navigation mode (`env.useUiLoginNav`) if you need to click a home-page Sign In button first
+- optional HTTP basic auth via `env.basicAuthUser` / `env.basicAuthPass` (for dev environments)
 - `env.selectors` to match your actual DOM selectors
 
 Example keys already included:
@@ -92,7 +93,7 @@ Use direct login URL to avoid brittle home-page click flows:
 
 ```js
 // cypress.config.js
-loginUrl: 'https://portal.soundcredit.com/login',
+loginUrl: 'https://devportal.soundcredit.com/login',
 useUiLoginNav: false,
 ```
 
@@ -185,7 +186,7 @@ npm run cy:open
 
 ---
 
-## 7) Troubleshooting:
+## 7) Troubleshooting: `fatal: not a git repository` / `--3way outside a repository`
 
 If you see:
 
@@ -281,9 +282,7 @@ git status
 ---
 
 
-## 8) Troubleshooting:
-
-cy.click() failed because it requires a DOM element`
+## 8) Troubleshooting: `cy.click() failed because it requires a DOM element`
 
 If Cypress points to code like:
 
