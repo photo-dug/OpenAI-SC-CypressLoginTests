@@ -185,7 +185,7 @@ npm run cy:open
 
 ---
 
-## 7) Troubleshooting: `fatal: not a git repository` / `--3way outside a repository`
+## 7) Troubleshooting:
 
 If you see:
 
