@@ -1,6 +1,6 @@
 # Cypress Login Robustness Suite
 
-This repository contains a reusable Cypress suite for login testing, including:
+This repository contains a reusable Cypress suite for login + Account creation testing, including:
 
 - input boundary testing (empty, malformed, short, long)
 - payload safety testing (XSS and SQL injection-style payloads)
