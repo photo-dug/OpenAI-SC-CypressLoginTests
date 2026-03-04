@@ -1,5 +1,17 @@
+const xssPayload = '<script>alert("xss")</script>';
+const sqlInjectionPayload = "' OR '1'='1";
+
+const validUser = {
+  email: Cypress.env('validEmail') || 'replace-me@example.com',
+  password: Cypress.env('validPassword') || 'replace-me-password',
+  verificationCode: Cypress.env('verificationCode') || ''
+};
+
+const emailAliases = Array.from({ length: 5 }, (_, i) => `dougrosss+sc${16 + i}@mac.com`);
+
 describe('Login page security and robustness suite', () => {
   beforeEach(() => {
+    cy.setupAuthFailureIntercept();
     cy.openLoginPage();
   });
 
@@ -14,7 +26,7 @@ describe('Login page security and robustness suite', () => {
     invalidEmails.forEach((email) => {
       cy.openLoginPage();
       cy.submitLogin(email, 'SomePassword123!');
-      cy.assertLoginError();
+      cy.assertLoginError({ expectApiFailure: true });
     });
   });
 
@@ -23,26 +35,26 @@ describe('Login page security and robustness suite', () => {
     const longPassword = 'A'.repeat(512) + '1!';
 
     cy.submitLogin('valid@example.com', shortPassword);
-    cy.assertLoginError();
+    cy.assertLoginError({ expectApiFailure: true });
 
     cy.openLoginPage();
     cy.submitLogin('valid@example.com', longPassword);
-    cy.assertLoginError();
+    cy.assertLoginError({ expectApiFailure: true });
   });
 
   it('blocks common injection payloads in credentials', () => {
     cy.submitLogin(xssPayload, xssPayload);
-    cy.assertLoginError();
+    cy.assertLoginError({ expectApiFailure: true });
 
     cy.openLoginPage();
     cy.submitLogin(sqlInjectionPayload, sqlInjectionPayload);
-    cy.assertLoginError();
+    cy.assertLoginError({ expectApiFailure: true });
   });
 
   it('handles large password values without crashing the UI', () => {
     const hugePassword = `Aa1!${'X'.repeat(2000)}`;
     cy.submitLogin('load-test@example.com', hugePassword);
-    cy.assertLoginError();
+    cy.assertLoginError({ expectApiFailure: true });
     cy.getBySelectorName('submit').filter(':visible').first().should('not.be.disabled');
   });
 
@@ -56,7 +68,7 @@ describe('Login page security and robustness suite', () => {
     emailAliases.forEach((alias) => {
       cy.openLoginPage();
       cy.submitLogin(alias, validUser.password);
-      cy.assertLoginError();
+      cy.assertLoginError({ expectApiFailure: true });
     });
   });
 });

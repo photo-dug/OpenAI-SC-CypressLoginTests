@@ -21,6 +21,12 @@ const DEFAULT_SUBMIT_INPUTS = [
   'input[type="submit"]'
 ].join(', ');
 
+const DEFAULT_VERIFY_SUBMIT_INPUTS = [
+  'button[data-testid="verify-submit"]',
+  'button[type="submit"]',
+  '[role="button"]'
+].join(', ');
+
 const selectorFromConfig = (name, fallbackSelector) => {
   const selectors = Cypress.env('selectors') || {};
   const selector = selectors[name];
@@ -45,7 +51,8 @@ Cypress.Commands.add('getBySelectorName', (name) => {
   const fallbackMap = {
     email: DEFAULT_EMAIL_INPUTS,
     password: DEFAULT_PASSWORD_INPUTS,
-    submit: DEFAULT_SUBMIT_INPUTS
+    submit: DEFAULT_SUBMIT_INPUTS,
+    verificationSubmit: DEFAULT_VERIFY_SUBMIT_INPUTS
   };
 
   return cy.get(selectorFromConfig(name, fallbackMap[name]), { timeout: 60000 });
@@ -72,15 +79,66 @@ Cypress.Commands.add('clickSubmit', () => {
   });
 });
 
+Cypress.Commands.add('setupAuthFailureIntercept', () => {
+  if (!Cypress.env('assertAuthFailureApi')) {
+    return;
+  }
+
+  const route = Cypress.env('authFailureRoute') || '**/auth/**';
+  cy.intercept('POST', route).as('authFailure');
+});
+
+Cypress.Commands.add('assertAuthFailureResponse', () => {
+  if (!Cypress.env('assertAuthFailureApi')) {
+    return;
+  }
+
+  const bodyRegex = new RegExp(
+    Cypress.env('authFailureBodyRegex') ||
+    'Authentication failed|Email or password incorrect|Invalid email address and/or password',
+    'i'
+  );
+
+  cy.wait('@authFailure', { timeout: 20000 }).then((interception) => {
+    const status = interception?.response?.statusCode;
+    expect(status, 'auth failure status code').to.be.oneOf([400, 401, 403]);
+
+    const responseBody = JSON.stringify(interception?.response?.body || '');
+    expect(responseBody, 'auth failure body text').to.match(bodyRegex);
+  });
+});
+
 Cypress.Commands.add('submitLogin', (email, password) => {
   cy.getBySelectorName('email').filter(':visible').first().clear().type(email, { delay: 40, log: false });
   cy.getBySelectorName('password').filter(':visible').first().clear().type(password, { log: false });
   cy.clickSubmit();
 });
 
-Cypress.Commands.add('assertLoginError', () => {
-  const selector = selectorFromConfig('errorMessage', '[data-testid="login-error"], .error, .alert-danger');
-  cy.get(selector).should('be.visible');
+Cypress.Commands.add('assertLoginError', (options = {}) => {
+  const { expectApiFailure = false } = options;
+
+  if (expectApiFailure) {
+    cy.assertAuthFailureResponse();
+  }
+
+  const selector = selectorFromConfig(
+    'errorMessage',
+    '[data-testid="login-error"], .error, .alert-danger, [role="alert"], .toast, .Toastify__toast, .Toastify__toast-body'
+  );
+  const configuredText = Cypress.env('loginErrorText') ||
+    'Invalid email address and/or password|Authentication failed|Email or password incorrect';
+  const textMatcher = new RegExp(configuredText, 'i');
+
+  cy.get('body', { timeout: 15000 }).then(($body) => {
+    const hasVisibleErrorNode = $body.find(selector).filter(':visible').length > 0;
+
+    if (hasVisibleErrorNode) {
+      cy.get(selector).filter(':visible').first().should('be.visible');
+      return;
+    }
+
+    cy.contains(textMatcher, { timeout: 15000 }).should('be.visible');
+  });
 });
 
 Cypress.Commands.add('assertLoginSuccess', () => {

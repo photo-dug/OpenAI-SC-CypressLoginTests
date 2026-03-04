@@ -68,6 +68,8 @@ Edit `cypress.config.js` and set:
 
 - `baseUrl` to your real website
 - `env.loginPath` to your login route (for example `/login`)
+- `env.loginUrl` for direct login page navigation (recommended for Sound Credit: `https://portal.soundcredit.com/login`)
+- optional UI-navigation mode (`env.useUiLoginNav`) if you need to click a home-page Sign In button first
 - `env.selectors` to match your actual DOM selectors
 
 Example keys already included:
@@ -81,6 +83,26 @@ Example keys already included:
 - `verificationSubmit`
 
 ---
+
+
+### Sound Credit recommended login navigation
+
+Use direct login URL to avoid brittle home-page click flows:
+
+```js
+// cypress.config.js
+loginUrl: 'https://portal.soundcredit.com/login',
+useUiLoginNav: false,
+```
+
+If you need to mimic the UI path instead, set:
+
+```js
+useUiLoginNav: true,
+homePath: '/',
+loginEntrySelector: '.login-btn-container button',
+// or loginEntryText: 'Sign In'
+```
 
 ## 3) Provide credentials and OTP securely
 
