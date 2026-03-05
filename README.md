@@ -84,6 +84,8 @@ Example keys already included:
 - `verificationCodeInput`
 - `verificationSubmit`
 
+- signup alias sequence is persisted in `cypress/fixtures/signup-sequence.json` so each run increments and avoids reusing emails
+
 ---
 
 

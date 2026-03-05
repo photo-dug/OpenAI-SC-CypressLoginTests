@@ -4,7 +4,9 @@ const existingAccount = {
 };
 
 const newAccountPassword = 'test1234';
-const signupAliases = Array.from({ length: 5 }, (_, i) => `dougross+sc${15 + i}@me.com`);
+const signupSequenceFile = 'cypress/fixtures/signup-sequence.json';
+
+let signupAliases = [];
 
 const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -129,8 +131,24 @@ const verifyRoleSelectionAndFinish = () => {
 };
 
 describe('SoundCredit signup and login/logout coverage', () => {
+  before(() => {
+    cy.readFile(signupSequenceFile, { log: true, timeout: 10000 })
+      .then((sequence) => sequence)
+      .catch(() => ({ lastIndex: 01 }))
+      .then((sequence) => {
+        const lastIndex = Number(sequence?.lastIndex || 01);
+        const startIndex = lastIndex + 1;
+        const nextLastIndex = lastIndex + 5;
+
+        signupAliases = Array.from({ length: 5 }, (_, i) => `dougross+scCypress${startIndex + i}@me.com`);
+
+        cy.writeFile(signupSequenceFile, { lastIndex: nextLastIndex }, { log: true });
+        cy.log(`Reserved signup aliases: ${signupAliases.join(', ')}`);
+      });
+  });
+
   it('creates 5 accounts with multi-step negative and positive checks', () => {
-    signupAliases.forEach((emailAlias) => {
+    cy.wrap(signupAliases).each((emailAlias) => {
       goToSignup();
       fillPrimaryEmail(emailAlias);
       fillPrimaryPassword(newAccountPassword);
