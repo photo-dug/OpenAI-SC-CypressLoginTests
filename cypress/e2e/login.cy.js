@@ -2,8 +2,8 @@ const xssPayload = '<script>alert("xss")</script>';
 const sqlInjectionPayload = "' OR '1'='1";
 
 const knownGoodUser = {
-  email: Cypress.env('validEmail') || 'dougross@me.com',
-  password: Cypress.env('validPassword') || 'Gn^8hbr3w',
+  email: Cypress.env('validEmail') || 'doug_ross@mac.com',
+  password: Cypress.env('validPassword') || 'test1234',
   verificationCode: Cypress.env('verificationCode') || ''
 };
 
