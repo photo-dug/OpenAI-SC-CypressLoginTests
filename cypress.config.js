@@ -12,8 +12,8 @@ module.exports = defineConfig({
     env: {
       loginPath: '/login',
       loginUrl: 'https://devportal.soundcredit.com/login',
-      signupPath: '/sign-up',
-      signupUrl: 'https://devportal.soundcredit.com/sign-up',
+      signupPath: '/signup',
+      signupUrl: 'https://devportal.soundcredit.com/signup',
       useUiLoginNav: false,
       homePath: '/',
       loginEntrySelector: '',

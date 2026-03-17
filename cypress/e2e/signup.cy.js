@@ -134,17 +134,35 @@ describe('SoundCredit signup and login/logout coverage', () => {
   before(() => {
     cy.readFile(signupSequenceFile, { log: true, timeout: 10000 })
       .then((sequence) => sequence)
-      .catch(() => ({ lastIndex: 01 }))
+      .catch(() => ({ lastIndex: 14 }))
       .then((sequence) => {
-        const lastIndex = Number(sequence?.lastIndex || 01);
+        const lastIndex = Number(sequence?.lastIndex || 14);
         const startIndex = lastIndex + 1;
         const nextLastIndex = lastIndex + 5;
 
-        signupAliases = Array.from({ length: 5 }, (_, i) => `dougross+scCypress${startIndex + i}@me.com`);
+        signupAliases = Array.from({ length: 5 }, (_, i) => `dougross+sc${startIndex + i}@me.com`);
 
         cy.writeFile(signupSequenceFile, { lastIndex: nextLastIndex }, { log: true });
         cy.log(`Reserved signup aliases: ${signupAliases.join(', ')}`);
       });
+  });
+
+
+  it('rejects too-short and too-long password attempts on signup entry', () => {
+    const shortPassword = 'A1!';
+    const longPassword = 'A'.repeat(512) + '1!';
+
+    goToSignup();
+    fillPrimaryEmail(signupAliases[0]);
+    fillPrimaryPassword(shortPassword);
+    cy.clickNext();
+    cy.assertLoginError();
+
+    goToSignup();
+    fillPrimaryEmail(signupAliases[0]);
+    fillPrimaryPassword(longPassword);
+    cy.clickNext();
+    cy.assertLoginError();
   });
 
   it('creates 5 accounts with multi-step negative and positive checks', () => {
