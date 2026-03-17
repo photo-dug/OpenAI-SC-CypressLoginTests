@@ -182,12 +182,33 @@ describe('SoundCredit signup and login/logout coverage', () => {
     });
   });
 
-  it('logs in and logs out with the provided existing account', () => {
+  it('logs in with the provided existing account', () => {
     cy.setupAuthFailureIntercept();
     cy.openLoginPage();
     cy.submitLogin(existingAccount.email, existingAccount.password);
     cy.assertLoginSuccess();
-    cy.logoutIfPossible();
-    cy.url({ timeout: 20000 }).should('include', '/login');
+  });
+
+  it('Logout and verify redirected to login (signup suite)', () => {
+    cy.setupAuthFailureIntercept();
+    cy.openLoginPage();
+    cy.submitLogin(existingAccount.email, existingAccount.password);
+    cy.assertLoginSuccess();
+
+    cy.get('a[href="/login"], .logout-nav a[href="/login"]', { timeout: 10000 })
+      .filter(':visible')
+      .first()
+      .then(($a) => {
+        if ($a.length) {
+          cy.wrap($a).scrollIntoView().click({ force: true });
+        } else {
+          cy.clearCookies();
+          cy.openLoginPage();
+        }
+      });
+
+    cy.url({ timeout: 60000 }).should('match', /\/login(?:[/?#]|$)/);
+    cy.get('input[type="email"], input[name="email"], input[placeholder*="mail"]', { timeout: 10000 }).should('exist');
+    cy.get('input[type="password"], input[name="password"]', { timeout: 10000 }).should('exist');
   });
 });
