@@ -1,6 +1,6 @@
 const existingAccount = {
-  email: 'dougross@me.com',
-  password: 'Gn^8hbr3w'
+  email: 'doug_ross@icloud.com',
+  password: 'test1234'
 };
 
 const newAccountPassword = 'test1234';
