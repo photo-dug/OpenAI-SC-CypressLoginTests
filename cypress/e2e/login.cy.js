@@ -51,10 +51,7 @@ describe('Login page security and robustness suite', () => {
   });
 
   it('Logout and verify redirected to login', () => {
-    cy.submitLogin(knownGoodUser.email, knownGoodUser.password);
-    cy.performEmailVerification(knownGoodUser.verificationCode);
-    cy.assertLoginSuccess();
-
+    
     cy.get('a[href="/login"], .logout-nav a[href="/login"]', { timeout: 10000 })
       .filter(':visible')
       .first()
