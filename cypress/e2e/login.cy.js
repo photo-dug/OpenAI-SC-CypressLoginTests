@@ -1,16 +1,48 @@
 const xssPayload = '<script>alert("xss")</script>';
 const sqlInjectionPayload = "' OR '1'='1";
+const loginResultsOutput = 'cypress/reports/login-results.json';
+const loginResultsPointer = 'cypress/reports/_login_results_pointer.txt';
 
 const knownGoodUser = {
-  email: Cypress.env('validEmail') || 'doug_ross@icloud.com',
-  password: Cypress.env('validPassword') || 'test1234',
+  email: Cypress.env('validEmail') || 'dougross@me.com',
+  password: Cypress.env('validPassword') || 'Gn^8hbr3w',
   verificationCode: Cypress.env('verificationCode') || ''
 };
+
+const loginRunResults = [];
 
 describe('Login page security and robustness suite', () => {
   beforeEach(() => {
     cy.setupAuthFailureIntercept();
     cy.openLoginPage();
+  });
+
+  afterEach(function () {
+    loginRunResults.push({
+      title: this.currentTest.title,
+      state: this.currentTest.state,
+      durationMs: this.currentTest.duration ?? null,
+      fullTitle: this.currentTest.fullTitle()
+    });
+  });
+
+  after(() => {
+    const payload = {
+      spec: 'cypress/e2e/login.cy.js',
+      generatedAt: new Date().toISOString(),
+      results: loginRunResults,
+      summary: {
+        total: loginRunResults.length,
+        passed: loginRunResults.filter((result) => result.state === 'passed').length,
+        failed: loginRunResults.filter((result) => result.state === 'failed').length,
+        pending: loginRunResults.filter((result) => result.state === 'pending').length
+      }
+    };
+
+    cy.writeFile(loginResultsOutput, payload, { log: true }).then(() => {
+      cy.writeFile(loginResultsPointer, `${loginResultsOutput}\n`, { log: false });
+      cy.log(`Login results written to ${loginResultsOutput}`);
+    });
   });
 
   it('rejects empty email and empty password', () => {
@@ -51,7 +83,10 @@ describe('Login page security and robustness suite', () => {
   });
 
   it('Logout and verify redirected to login', () => {
-    
+    cy.submitLogin(knownGoodUser.email, knownGoodUser.password);
+    cy.performEmailVerification(knownGoodUser.verificationCode);
+    cy.assertLoginSuccess();
+
     cy.get('a[href="/login"], .logout-nav a[href="/login"]', { timeout: 10000 })
       .filter(':visible')
       .first()

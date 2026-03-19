@@ -139,6 +139,8 @@ npm run cy:run
 npm run cy:run:login
 ```
 
+After the login suite runs, it writes a visible report to `cypress/reports/login-results.json` and a pointer file at `cypress/reports/_login_results_pointer.txt`.
+
 ### Run only the signup + onboarding suite
 
 ```bash
